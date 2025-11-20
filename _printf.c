@@ -1,10 +1,10 @@
 #include "main.h"
 
 /**
- * get_printer - returns function for a given specifier
- * @c: format specifier
+ * get_printer - selects the correct function for a specifier
+ * @c: the format specifier
  *
- * Return: pointer to function, or NULL if not found
+ * Return: pointer to the function, or NULL if not found
  */
 static int (*get_printer(char c))(va_list)
 {
@@ -29,23 +29,23 @@ static int (*get_printer(char c))(va_list)
 
 /**
  * _printf - produces output according to a format
- * @format: format string
+ * @format: a format string
  *
  * Return: number of characters printed, or -1 on error
  */
 int _printf(const char *format, ...)
 {
     va_list ap;
-    int i = 0, count = 0;
+    int i, count = 0;
     int (*func)(va_list);
-    int tmp;
+    int printed;
 
     if (format == NULL)
         return (-1);
 
     va_start(ap, format);
 
-    while (format[i] != '\0')
+    for (i = 0; format[i] != '\0'; i++)
     {
         if (format[i] != '%')
         {
@@ -55,51 +55,47 @@ int _printf(const char *format, ...)
                 return (-1);
             }
             count++;
+            continue;
         }
-        else
-        {
-            i++;
 
-            if (format[i] == '\0')
+        i++;
+        if (format[i] == '\0')
+        {
+            va_end(ap);
+            return (-1);
+        }
+
+        if (format[i] == '%')
+        {
+            if (_putchar('%') == -1)
             {
                 va_end(ap);
                 return (-1);
             }
-
-            if (format[i] == '%')
-            {
-                if (_putchar('%') == -1)
-                {
-                    va_end(ap);
-                    return (-1);
-                }
-                count++;
-            }
-            else
-            {
-                func = get_printer(format[i]);
-                if (func != NULL)
-                {
-                    tmp = func(ap);
-                    if (tmp == -1)
-                    {
-                        va_end(ap);
-                        return (-1);
-                    }
-                    count += tmp;
-                }
-                else
-                {
-                    if (_putchar('%') == -1 || _putchar(format[i]) == -1)
-                    {
-                        va_end(ap);
-                        return (-1);
-                    }
-                    count += 2;
-                }
-            }
+            count++;
+            continue;
         }
-        i++;
+
+        func = get_printer(format[i]);
+        if (func != NULL)
+        {
+            printed = func(ap);
+            if (printed == -1)
+            {
+                va_end(ap);
+                return (-1);
+            }
+            count += printed;
+        }
+        else
+        {
+            if (_putchar('%') == -1 || _putchar(format[i]) == -1)
+            {
+                va_end(ap);
+                return (-1);
+            }
+            count += 2;
+        }
     }
 
     va_end(ap);

@@ -4,22 +4,20 @@
  * print_string - prints a string
  * @ap: argument list
  *
- * Return: number of characters printed
+ * Return: number of characters printed or -1 on error
  */
 int print_string(va_list ap)
 {
-    char *s;
+    char *s = va_arg(ap, char *);
     int count = 0;
 
-    s = va_arg(ap, char *);
     if (s == NULL)
         s = "(null)";
 
-    while (*s)
+    while (s[count] != '\0')
     {
-        if (_putchar(*s) == -1)
+        if (_putchar(s[count]) == -1)
             return (-1);
-        s++;
         count++;
     }
 
