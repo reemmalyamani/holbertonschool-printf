@@ -17,7 +17,8 @@ int print_string(va_list ap)
 
     while (*s)
     {
-        _putchar(*s);
+        if (_putchar(*s) == -1)
+            return (-1);
         s++;
         count++;
     }
