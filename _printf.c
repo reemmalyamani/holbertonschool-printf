@@ -1,71 +1,83 @@
 #include "main.h"
 
 /**
- * _printf - Custom printf that handles %c, %s, and %%
- * @format: Format string
- * Return: Number of characters printed
+ * get_printer - returns function for a given specifier
+ * @c: format specifier
+ *
+ * Return: pointer to function, or NULL if not found
+ */
+static int (*get_printer(char c))(va_list)
+{
+	printer_t printers[] = {
+		{'c', print_char},
+		{'s', print_string},
+		{'d', print_int},
+		{'i', print_int},
+		{'\0', NULL}
+	};
+	int i = 0;
+
+	while (printers[i].spec != '\0')
+	{
+		if (printers[i].spec == c)
+			return (printers[i].f);
+		i++;
+	}
+
+	return (NULL);
+}
+
+/**
+ * _printf - produces output according to a format
+ * @format: format string
+ *
+ * Return: number of characters printed, or -1 on error
  */
 int _printf(const char *format, ...)
 {
-    va_list args;
-    int i = 0, count = 0;
-    char *str, c;
+	va_list ap;
+	int i = 0, count = 0;
+	int (*func)(va_list);
 
-    if (format == NULL)
-        return (-1);
+	if (format == NULL)
+		return (-1);
 
-    va_start(args, format);
+	va_start(ap, format);
 
-    while (format[i])
-    {
-        if (format[i] != '%')
-        {
-            write(1, &format[i], 1);
-            count++;
-        }
-        else
-        {
-            i++;
-            if (format[i] == '\0')
-            {
-                va_end(args);
-                return (-1);
-            }
+	while (format[i])
+	{
+		if (format[i] != '%')
+		{
+			count += _putchar(format[i]);
+		}
+		else
+		{
+			i++;
+			if (format[i] == '\0')
+			{
+				va_end(ap);
+				return (-1);
+			}
 
-            if (format[i] == 'c')
-            {
-                c = va_arg(args, int);
-                write(1, &c, 1);
-                count++;
-            }
-            else if (format[i] == 's')
-            {
-                str = va_arg(args, char *);
-                if (str == NULL)
-                    str = "(null)";
-                while (*str)
-                {
-                    write(1, str, 1);
-                    str++;
-                    count++;
-                }
-            }
-            else if (format[i] == '%')
-            {
-                write(1, "%", 1);
-                count++;
-            }
-            else
-            {
-                /* Print unknown specifiers as %x */
-                write(1, "%", 1);
-                write(1, &format[i], 1);
-                count += 2;
-            }
-        }
-        i++;
-    }
+			if (format[i] == '%')
+			{
+				count += _putchar('%');
+			}
+			else
+			{
+				func = get_printer(format[i]);
+				if (func != NULL)
+					count += func(ap);
+				else
+				{
+					count += _putchar('%');
+					count += _putchar(format[i]);
+				}
+			}
+		}
+		i++;
+	}
 
-    va_end(args);
-    return (count);
+	va_end(ap);
+	return (count);
 }
