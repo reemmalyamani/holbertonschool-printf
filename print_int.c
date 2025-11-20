@@ -18,7 +18,7 @@ static int print_number(long n)
 }
 
 /**
- * print_int - prints a signed integer (%d and %i)
+ * print_int - prints a signed integer (for %d and %i)
  * @ap: argument list
  *
  * Return: number of characters printed
