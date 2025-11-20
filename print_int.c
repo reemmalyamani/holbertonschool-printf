@@ -8,33 +8,32 @@
  */
 static int print_number(long n)
 {
-	int count = 0;
+    int count = 0;
 
-	if (n / 10)
-		count += print_number(n / 10);
+    if (n / 10)
+        count += print_number(n / 10);
 
-	count += _putchar((n % 10) + '0');
-	return (count);
+    count += _putchar((n % 10) + '0');
+    return (count);
 }
 
 /**
- * print_int - prints a signed integer (for %d and %i)
+ * print_int - prints a signed integer
  * @ap: argument list
  *
  * Return: number of characters printed
  */
 int print_int(va_list ap)
 {
-	int value = va_arg(ap, int);
-	long n = value;
-	int count = 0;
+    long n = va_arg(ap, int);
+    int count = 0;
 
-	if (n < 0)
-	{
-		count += _putchar('-');
-		n = -n;
-	}
+    if (n < 0)
+    {
+        count += _putchar('-');
+        n = -n;
+    }
 
-	count += print_number(n);
-	return (count);
+    count += print_number(n);
+    return (count);
 }
